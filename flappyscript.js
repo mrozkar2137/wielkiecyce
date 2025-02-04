@@ -10,8 +10,8 @@ const grass = new Image();
 
 bird.src = "https://mrozkar2137.github.io/wielkiecyce/images/emo8.png";
 bg.src = "https://mrozkar2137.github.io/wielkiecyce/images/bg.png";
-pipeUp.src = "https://mrozkar2137.github.io/wielkiecyce/images/pipeUp.png";
-pipeDown.src = "https://mrozkar2137.github.io/wielkiecyce/images/pipeDown.png";
+pipeUp.src = "https://mrozkar2137.github.io/wielkiecyce/images/pipeup.png";
+pipeDown.src = "https://mrozkar2137.github.io/wielkiecyce/images/pipedown.png";
 grass.src = "https://mrozkar2137.github.io/wielkiecyce/images/grass.png";
 
 // Pozycja ptaka
