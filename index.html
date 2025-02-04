@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WIELKIE CYCE</title>
+	
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		document.getElementById('random-link-button').addEventListener('click', function(event) {
+			event.preventDefault(); // Zapobiega domyślnej akcji (np. przeładowanie strony)
+
+			// Wczytanie pliku uplinks.txt za pomocą fetch API
+			fetch('uplinks.txt')
+				.then(response => response.text())
+				.then(data => {
+					// Split the content into lines
+					const lines = data.split('\n').map(line => line.trim()).filter(line => line !== '');
+					
+					// Losowanie jednej linii
+					const randomLink = lines[Math.floor(Math.random() * lines.length)];
+					
+					// Otwórz losowy link w nowej karcie
+					window.open(randomLink, '_blank');
+				})
+				.catch(error => {
+					console.error('Wystąpił błąd podczas ładowania pliku:', error);
+				});
+		});
+	});
+	</script>
+
+		
+
+    <style>
+        body {
+            background-color: black;
+        }
+        p {
+            text-align: center;
+            color: white;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+        h1 {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+        }
+        h2, h3 {
+            color: rgb(255, 24, 217);
+            font-weight: bold;
+            text-align: center;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+        .vertical-shake {
+            animation: vertical-shaking 0.20s infinite;
+        }
+        @keyframes vertical-shaking {
+            0% { transform: translateY(0) }
+            25% { transform: translateY(5px) }
+            50% { transform: translateY(-5px) }
+            75% { transform: translateY(5px) }
+            100% { transform: translateY(0) }
+        }
+        .centerImage {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 60%;
+			
+        }
+		.centerImageSmall {
+			border: 5px solid red;
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+			width: 30%; /* Zmniejszenie szerokości do 30% */
+		}
+
+        /* Styl dla przycisków */
+        .gif-container {
+            display: flex;
+            flex-direction: column; /* Przycisk jeden pod drugim */
+            align-items: center; /* Wyśrodkowanie */
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .gif-button {
+            border: 5px solid red;
+            padding: 10px;
+            cursor: pointer;
+            background-color: black;
+        }
+
+		.button-container {
+			display: flex;
+			justify-content: center; /* Wyśrodkowanie poziome */
+			align-items: center;     /* Wyśrodkowanie pionowe (jeśli chcesz, aby przycisk był wyśrodkowany również w pionie) */
+			height: 10vh;           /* Aby kontener miał pełną wysokość strony (jeśli chcesz wyśrodkować przycisk na całej stronie) */
+		}
+
+		.rainbow-button {
+			display: inline-block;
+			padding: 20px 40px;
+			text-align: center;
+			color: black;
+			font-weight: bold;
+			font-size: 24px;
+			border: 5px solid red; /* Czerwona obramówka */
+			background-image: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet); /* Tęczowe tło */
+			background-size: 200% auto;
+			background-position: left center;
+			text-decoration: none;
+			font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+			transition: background-position 0.5s ease;
+		}
+
+		.rainbow-button:hover {
+			background-position: right center; /* Efekt płynnego przesuwania tęczy */
+		}
+
+		.button-text {
+			font-size: 18px; /* Rozmiar czcionki tekstu */
+			
+			
+		}
+
+.gif-button .button-text {
+    font-size: 18px;
+    vertical-align: 33px; /* Przesuwa całość do góry */
+	
+}
+
+.gif-button .link-text {
+    color: #ffcc00; /* Kolor tekstu linku */
+    text-decoration: none; /* Usuwa podkreślenie */
+    cursor: pointer; /* Wskaźnik zmienia się na "rękę" */
+	text-decoration: none;
+}
+
+.gif-button .link-text:hover {
+    text-decoration: underline; /* Podkreślenie podczas najechania */
+
+}
+
+    </style>
+</head>
+<body>
+    <img class="centerImage" src="images/LOGO.gif" alt="Logo">
+    <h1 class="vertical-shake">WIELKIE CYCE CZEKAJA NA CIEBIE!!</h1>
+
+    <!-- Przyciski z gifami - jeden pod drugim -->
+    <div class="gif-container">
+        <a href="flappy.html" class="gif-button">
+            <img src="images/flappykao.gif" alt="Flappy Kao">
+        </a>
+	<a href="#" id="random-link-button" class="gif-button">
+		<img src="images/rup.gif" alt="Random ukryta prawda">
+	</a>
+<a href="https://kao.fringilla.pl/?sort=best" class="gif-button">
+    <img src="images/ranking.gif" alt="kaofringilla">
+    <span class="button-text">Autor: <span class="link-text" onclick="window.open('https://www.twitch.tv/jestem_fringilla', '_blank')">fringilla</span></span>
+</a>
+
+
+    </div>
+
+    <h2>TEN SKURWYSYN MA 10 RAZY WIECEJ CYCOW NIZ TY</h2>
+    <img class="centerImageSmall" src="images/kangurekkaopejreal.jpeg" alt="Kangurek_Kao_Pej">
+	<div class="button-container">
+		<a href="https://www.twitch.tv/kaopej" class="rainbow-button">ZOBACZ JAK</a>
+	</div>
+	<img class="centerImageSmall" src="images/anime-excited.gif" alt="animecyce">
+	<h3>autor: mrozkar</h3>
+</body>
+
+</html>

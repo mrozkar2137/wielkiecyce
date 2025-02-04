@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird</title>
+    <style>
+        canvas {
+            display: block;
+            margin: auto;
+            background-color: #70c5ce;
+        }
+        body {
+            background-color: black;
+            text-align: center;
+        }
+        .emoji-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .emoji-container img {
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: transform 0.2s;
+        }
+        .emoji-container img:hover {
+            transform: scale(1.2);
+        }
+		p {
+			color: white;
+			font-family: Arial, Helvetica, sans-serif;
+			font-size: 24px;
+		}
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="600" height="480"></canvas>
+	<p>Wybierz swojego wojownika</p>
+    <div class="emoji-container" id="emojiContainer">
+
+    </div>
+
+    <script>
+        // Tworzenie klikalnych obrazków emo1.png - emo15.png
+        const emojiContainer = document.getElementById("emojiContainer");
+
+        // Funkcja, która zmienia obrazek ptaka na podstawie klikniętej emotki
+        function changeBirdImage(emoji) {
+            bird.src = `images/${emoji}.png`; // Zmieniamy źródło ptaka na wybraną emotkę
+        }
+
+        // Nasłuchujemy kliknięcia na każdą emotkę
+        for (let i = 1; i <= 16; i++) {
+            let img = document.createElement("img");
+            img.src = `images/emo${i}.png`;
+            img.alt = `Emoji ${i}`;
+            img.dataset.emoji = `emo${i}`;  // Dodajemy data-attribute
+
+            // Nasłuchujemy kliknięcia na każdą emotkę
+            img.addEventListener("click", () => {
+                changeBirdImage(img.dataset.emoji);  // Zmieniamy obrazek ptaka na wybraną emotkę
+            });
+
+            emojiContainer.appendChild(img);
+        }
+    </script>
+
+    <script src="flappyscript.js"></script> <!-- Twój istniejący skrypt gry -->
+</body>
+</html>
