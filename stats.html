@@ -122,7 +122,7 @@
         }
 		
 		function MStreamedFunfact(minutes) {
-			const randomFact = Math.floor(Math.random() * 5); // Losuje liczbę od 0 do 4, by wybrać jeden z 5 faktów
+			const randomFact = Math.floor(Math.random() * 6); // Losuje liczbę od 0 do 4, by wybrać jeden z 5 faktów
 
 			switch (randomFact) {
 				case 0:
@@ -149,6 +149,10 @@
 					// Ile razy ISS pokazałoby Ziemię (ISS okrąża Ziemię co 92 minuty)
 					const issOrbits = Math.floor(minutes / 92);
 					return `W tym czasie ISS okrążyłoby Ziemię około ${issOrbits} razy. (92 minuty jedno)`;
+				case 5:
+					// Ile speedronow kangurek kao 2
+					const kaospeedrun = Math.floor(minutes / 52);
+					return `W tym czasie można speedrunować kangurek kao runda 2 ${kaospeedrun} razy (zakładając, że speedrun trwa 52 min)`;
 
 				default:
 					return "Błąd w losowaniu faktu.";
