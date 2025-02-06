@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statystyki KAOPEJ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #18181b;
+            color: white;
+        }
+        .container {
+			font-size: 24px;
+            margin-top: 50px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #1f1f23;
+            display: inline-block;
+            text-align: left;
+        }
+        button {
+            background-color: #9146ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #772ce8;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin: 8px 0;
+            font-size: 18px;
+        }
+        .error {
+            color: red;
+        }
+		
+		small {
+			display: block;
+			font-size: 15px;
+			color: gray;
+			margin-bottom: 10px;
+		}
+
+		
+    </style>
+</head>
+<body>
+
+    <h1>📺 Statystyki kanału kaopej w ciągu ostatnich 30 dni</h1>
+<div class="container">
+    <!--<p>📊 Ranking: <span id="rank">Ładowanie...</span></p>-->
+
+    <p>⏳ Czas streamowania: <span id="minutesStreamed">Ładowanie...</span></p>
+    <small id="funFactSmall">Całkowity czas transmisji na Twitchu</small>
+
+    <p>👥 Średnia widzów: <span id="avgViewers">Ładowanie...</span></p>
+    <small id="avgViewersSmall">Średnia liczba osób oglądających transmisję</small>
+
+    <p>🚀 Maksymalna liczba widzów: <span id="maxViewers">Ładowanie...</span></p>
+    <small id="maxViewersSmall">Największa liczba widzów na jednej transmisji</small>
+
+    <p>⏰ Widzowie oglądali streamy przez: <span id="hoursWatched">Ładowanie...</span></p>
+    <small id="hoursWatchedSmall">Całkowity czas oglądania na Twitchu</small>
+
+    <p>❤️ Nowi obserwujący: <span id="followers">Ładowanie...</span></p>
+    <small id="followersSmall">Ilość nowych osób, które zaczęły obserwować</small>
+
+    <p>⭐ Łączna liczba obserwujących: <span id="followersTotal">Ładowanie...</span></p>
+	<small id="totalFollowersSmall">Ilość nowych osób, które zaczęły obserwować</small>
+</div>
+<p> źródło: <a href="https://twitchtracker.com/kaopej">twitchtracker</a></p>
+
+    <script>
+        async function fetchTwitchData() {
+            try {
+                const response = await fetch("https://twitchtracker.com/api/channels/summary/kaopej");
+                if (!response.ok) throw new Error("Błąd pobierania danych");
+
+                const data = await response.json();
+
+                document.getElementById("minutesStreamed").textContent = formatMinutes(data.minutes_streamed) || "Brak danych";
+				document.getElementById("funFactSmall").textContent = MStreamedFunfact(data.minutes_streamed);
+                document.getElementById("avgViewers").textContent = data.avg_viewers || "Brak danych";
+                document.getElementById("avgViewersSmall").textContent = viewersFunfact(data.avg_viewers) || "Brak danych";
+				
+                document.getElementById("maxViewers").textContent = data.max_viewers || "Brak danych";
+                document.getElementById("maxViewersSmall").textContent = viewersFunfact(data.max_viewers) || "Brak danych";
+                document.getElementById("hoursWatched").textContent = formatHours(data.hours_watched) || "Brak danych";
+				document.getElementById("hoursWatchedSmall").textContent = DStreamedFunfact(data.hours_watched) || "Brak danych";
+                document.getElementById("followers").textContent = data.followers || "Brak danych";
+                document.getElementById("followersSmall").textContent = viewersFunfact(data.followers) || "Brak danych";
+                document.getElementById("followersTotal").textContent = data.followers_total || "Brak danych";
+                document.getElementById("totalFollowersSmall").textContent = viewersFunfact(data.followers_total) || "Brak danych";
+            } catch (error) {
+                console.error("Błąd:", error);
+                document.querySelector(".container").innerHTML = `<p class="error">❌ Błąd pobierania danych</p>`;
+            }
+        }
+
+        function formatMinutes(minutes) {
+            const days = Math.floor(minutes / (24 * 60));
+            const hours = Math.floor((minutes % (24 * 60)) / 60);
+            const mins = minutes % 60;
+            return `${days}d ${hours}h ${mins}m`;
+        }
+
+        function formatHours(hours) {
+            const days = Math.floor(hours / 24);
+            const remainingHours = hours % 24;
+            return `${days}d ${remainingHours}h`;
+        }
+		
+		function MStreamedFunfact(minutes) {
+			const randomFact = Math.floor(Math.random() * 5); // Losuje liczbę od 0 do 4, by wybrać jeden z 5 faktów
+
+			switch (randomFact) {
+				case 0:
+					// Ile ludzi się urodziło w tym czasie (średnio 250 dzieci na minutę)
+					const babiesBorn = minutes * 250;
+					return `W tym czasie urodziło się około ${babiesBorn} dzieci. (250 dzieci na minutę)`;
+
+				case 1:
+					// Ile osób zmarło w tym czasie (średnio 120 osób na minutę)
+					const peopleDied = minutes * 120;
+					return `W tym czasie zmarło około ${peopleDied} osób. (120 osób na minutę)`;
+
+				case 2:
+					// Ile razy można obejrzeć "Breaking Bad" (trwa 2971 minut)
+					const breakingBadCount = Math.floor(minutes / 2971);
+					return `W tym czasie można obejrzeć "Breaking Bad" około ${breakingBadCount} razy.`;
+
+				case 3:
+					// Ile kilometrów przejechałby pociąg EN 57 (prędkość 110 km/h)
+					const trainDistance = (minutes / 60) * 110; // Dzielimy przez 60, by przekonwertować minuty na godziny
+					return `Pociąg EN 57 przejechałby w tym czasie około ${trainDistance.toFixed(2)} km. (prędkość 110 km/h)`;
+
+				case 4:
+					// Ile razy ISS pokazałoby Ziemię (ISS okrąża Ziemię co 92 minuty)
+					const issOrbits = Math.floor(minutes / 92);
+					return `W tym czasie ISS okrążyłoby Ziemię około ${issOrbits} razy. (92 minuty jedno)`;
+
+				default:
+					return "Błąd w losowaniu faktu.";
+			}
+		}
+		
+		function DStreamedFunfact(hours) {
+			// Przeliczenie godzin na inne wartości
+			const percentOfLife = (hours / (73 * 365 * 24)) * 100; // Procent średniego życia człowieka (73 lata w godzinach)
+
+			// Losowanie numeru do switch
+			const randomIndex = Math.floor(Math.random() * 4); // Losujemy jeden z funfactów
+
+			switch (randomIndex) {
+				case 0:
+					// Funfact: Obieg Merkurego (w godzinach)
+					return `Przez ten czas Merkury okrążył by Słońce ${Math.floor(hours / (88 * 24))} razy (jeden pełny obieg Merkurego trwa 88 dni).`;
+
+				case 1:
+					// Funfact: Procent życia (w godzinach)
+					return `Stanowi to około ${percentOfLife.toFixed(2)}% średniego życia człowieka (zakładając średnią długość życia 73 lata).`;
+
+				case 2:
+					// Funfact: Języki (zakładając, że nauka jednego języka trwa 1 rok, czyli 8760 godzin)
+					return `Przez ten czas można by nauczyć się około ${Math.floor(hours / 8760)} nowych języków (zakładając, że nauka jednego języka trwa 1 rok).`;
+
+				case 3:
+					// Funfact: Pociąg EN 57 (110 km/h) w godzinach
+					return `Przez ten czas okrążyłbyś pociągiem EN 57 równik ${Math.floor(hours * 110 / 40076)} razy (prędkość 110 km/h).`;
+
+				default:
+					return "Brak danych";
+			}
+		}
+
+		function viewersFunfact(viewersCount) {
+			// Lista miejscowości z liczbą mieszkańców
+			const locations = [
+				{ name: "Raniżowa", population: 2317 },
+				{ name: "Wąchocka", population: 2795 },
+				{ name: "Grudziądza", population: 88658 },
+				{ name: "Bydgoszczy", population: 324984 },
+				{ name: "Jarocina", population: 26410 },
+				{ name: "wieś Stolec", population: 1121 },
+				{ name: "wsi Ruchocice", population: 823 },
+				{ name: "wsi Cyców", population: 1717 }
+			];
+
+			// Losowanie jednej miejscowości
+			const randomIndex = Math.floor(Math.random() * locations.length);
+			const selectedLocation = locations[randomIndex];
+
+			// Obliczenie procentu populacji
+			const percentage = (viewersCount / selectedLocation.population) * 100;
+
+			// Zwrócenie funfacta
+			return `To ${percentage.toFixed(2)}% populacji ${selectedLocation.name} (${selectedLocation.population} mieszkańców).`;
+		}
+
+        document.addEventListener("DOMContentLoaded", fetchTwitchData);
+    </script>
+
+</body>
+</html>
