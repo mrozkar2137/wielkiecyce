@@ -51,13 +51,13 @@
 
         // Funkcja, która zmienia obrazek ptaka na podstawie klikniętej emotki
         function changeBirdImage(emoji) {
-            bird.src = `https://mrozkar2137.github.io/wielkiecyce/images/${emoji}.png`; // Zmieniamy źródło ptaka na wybraną emotkę
+            bird.src = `images/${emoji}.png`; // Zmieniamy źródło ptaka na wybraną emotkę
         }
 
         // Nasłuchujemy kliknięcia na każdą emotkę
         for (let i = 1; i <= 16; i++) {
             let img = document.createElement("img");
-            img.src = `https://mrozkar2137.github.io/wielkiecyce/images/emo${i}.png`;
+            img.src = `images/emo${i}.png`;
             img.alt = `Emoji ${i}`;
             img.dataset.emoji = `emo${i}`;  // Dodajemy data-attribute
 
