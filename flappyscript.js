@@ -58,7 +58,7 @@ function resetGame() {
 }
 
 function drawScore() {
-    ctx.fillStyle = "#000";
+    ctx.fillStyle = "white";
     ctx.font = "24px Arial";
     ctx.fillText("Punkty: " + score, 10, 30);
 }
