@@ -8,11 +8,11 @@ const pipeUp = new Image();
 const pipeDown = new Image();
 const grass = new Image();
 
-bird.src = "https://mrozkar2137.github.io/wielkiecyce/images/emo8.png";
-bg.src = "https://mrozkar2137.github.io/wielkiecyce/images/bg.png";
-pipeUp.src = "https://mrozkar2137.github.io/wielkiecyce/images/pipeup.png";
-pipeDown.src = "https://mrozkar2137.github.io/wielkiecyce/images/pipedown.png";
-grass.src = "https://mrozkar2137.github.io/wielkiecyce/images/grass.png";
+bird.src = "images/emo8.png";
+bg.src = "images/bg.png";
+pipeUp.src = "images/pipeup.png";
+pipeDown.src = "images/pipedown.png";
+grass.src = "images/grass.png";
 
 // Pozycja ptaka
 let birdX = 50;
@@ -43,7 +43,7 @@ function resetGame() {
 
     // Losowanie dźwięku od 1 do 5
     let randomSoundIndex = Math.floor(Math.random() * 5) + 1;
-    let deathSound = new Audio(`https://mrozkar2137.github.io/wielkiecyce/sounds/death${randomSoundIndex}.mp3`);
+    let deathSound = new Audio(`sounds/death${randomSoundIndex}.mp3`);
     
     // Odtworzenie losowego dźwięku przegranej
     deathSound.play();
