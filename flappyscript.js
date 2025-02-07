@@ -64,7 +64,7 @@ function drawScore() {
 }
 
 function checkCollision() {
-    let collisionMargin = 20; // Zmniejsza obszar kolizji ptaka
+    let collisionMargin = 10; // Zmniejsza obszar kolizji ptaka
 
     for (let i = 0; i < pipes.length; i++) {
         let pipe = pipes[i];
