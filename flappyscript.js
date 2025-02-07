@@ -64,14 +64,17 @@ function drawScore() {
 }
 
 function checkCollision() {
+    let collisionMargin = 10; // Zmniejsza obszar kolizji ptaka
+
     for (let i = 0; i < pipes.length; i++) {
         let pipe = pipes[i];
 
-        // Sprawdzenie kolizji z rurami
+        // Sprawdzenie kolizji z rurami (z uwzględnieniem marginesu)
         if (
-            birdX + bird.width > pipe.x &&
-            birdX < pipe.x + pipeUp.width &&
-            (birdY < pipe.y + pipeUp.height || birdY + bird.height > pipe.y + pipeUp.height + gap)
+            birdX + bird.width - collisionMargin > pipe.x && // Prawa krawędź ptaka
+            birdX + collisionMargin < pipe.x + pipeUp.width && // Lewa krawędź ptaka
+            (birdY + collisionMargin < pipe.y + pipeUp.height || // Górna krawędź ptaka
+            birdY + bird.height - collisionMargin > pipe.y + pipeUp.height + gap) // Dolna krawędź ptaka
         ) {
             console.log("Kolizja z rurą!");
             resetGame();
@@ -86,12 +89,13 @@ function checkCollision() {
         }
     }
 
-    // Kolizja z trawą
-    if (birdY + bird.height >= canvas.height - grass.height) {
+    // Kolizja z trawą (z tolerancją)
+    if (birdY + bird.height - collisionMargin >= canvas.height - grass.height) {
         console.log("Kolizja z ziemią!");
         resetGame();
     }
 }
+
 
 let lastTime = 0;
 const fps = 60;
