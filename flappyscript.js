@@ -8,7 +8,7 @@ const pipeUp = new Image();
 const pipeDown = new Image();
 const grass = new Image();
 
-bird.src = "images/emo8.png";
+bird.src = "images/emo16.png";
 bg.src = "images/bg.png";
 pipeUp.src = "images/pipeup.png";
 pipeDown.src = "images/pipedown.png";
