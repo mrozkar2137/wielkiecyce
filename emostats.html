@@ -110,7 +110,7 @@
     async function fetchEmoteRanking() {
         const timeRange = document.getElementById("timeSelect").value;
         try {
-            const response = await fetch(`http://captures-crest.with.playit.plus:3310/licznik?czas=${timeRange}`);
+            const response = await fetch(`https://cold-brook-49f6.kmrozkar.workers.dev/licznik?czas=${timeRange}`);
             if (!response.ok) throw new Error("Błąd pobierania danych");
 
             const data = await response.json();
