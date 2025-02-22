@@ -132,7 +132,7 @@
                 let imageUrl = emote.url;
                 
                 if (!imageUrl.startsWith("http")) {
-                    imageUrl = "https://" + imageUrl;
+                    imageUrl = "https:" + imageUrl;
                 }
 
                 const countText = emote.count === 1 ? "raz" : "razy";
