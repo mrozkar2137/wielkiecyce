@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ranking czatu</title>
+    <title>Ranking emotek</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -38,11 +38,15 @@
             background-color: #3a3a3e;
         }
         .stats-container {
-            background-color: #2a2a2e;
-            padding: 10px;
-            border-radius: 8px;
-            display: inline-block;
-            margin-top: 20px;
+			font-size: 24px;
+			padding: 20px;
+			border-radius: 10px;
+			background-color: #1f1f23;
+			display: block; /* lub inline-block, jeśli chcesz */
+			text-align: left;
+			margin: 20px auto; /* Automatyczne marginesy poziome wycentrują element */
+			width: 20%; /* Możesz dostosować szerokość według uznania */
+
         }
         .stats {
             font-size: 20px;
@@ -81,15 +85,16 @@
 </head>
 <body>
 
-    <div class="stats-container">
-        <p class="stats">💬 Liczba wiadomości: <span id="totalMessages">Ładowanie...</span></p>
-        <p class="stats">🎰 Widzowie gamblowali <span id="gambleCount">Ładowanie...</span> razy</p>
-    </div>
+ 
 
     <div class="header">
-        <h1>📊 Ranking najczęściej używanych emotek</h1>
+	
+        <h1>📊 Ranking czatu</h1>
+
         <div class="select-container">
+		
             <p>Liczone od: 22.02.2025</p>
+			
             <label for="timeSelect">Wybierz zakres: </label>
             <select id="timeSelect" onchange="fetchEmoteRanking()">
                 <option value="1h">Ostatnia godzina</option>
@@ -99,13 +104,16 @@
             </select>
         </div>
     </div>
-    
+	<div class="stats-container">
+        <p class="stats">💬 Liczba wiadomości: <span id="totalMessages">Ładowanie...</span></p>
+        <p class="stats">🎰 Widzowie gamblowali <span id="gambleCount">Ładowanie...</span> razy</p>
+    </div>
+    <h2>Ranking emotek</h2>
 
 
     <div class="container">
         <ul id="ranking">Ładowanie...</ul>
     </div>
-
 <script>
     async function fetchEmoteRanking() {
         const timeRange = document.getElementById("timeSelect").value;
