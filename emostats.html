@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking emotek</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #18181b;
+            color: white;
+            padding: 20px;
+        }
+        .header {
+            margin-bottom: 20px;
+        }
+        h1 {
+            margin-bottom: 10px;
+        }
+        .select-container {
+            display: inline-block;
+            padding: 10px;
+            background: #1f1f23;
+            border-radius: 8px;
+        }
+        select {
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            background-color: #2a2a2e;
+            color: white;
+            outline: none;
+            cursor: pointer;
+        }
+        select:hover {
+            background-color: #3a3a3e;
+        }
+        .stats-container {
+            background-color: #2a2a2e;
+            padding: 10px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .stats {
+            font-size: 20px;
+            margin: 5px 0;
+        }
+        .container {
+            font-size: 24px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #1f1f23;
+            display: inline-block;
+            text-align: left;
+            margin-top: 20px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin: 8px 0;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        img {
+            width: 32px;
+            height: 32px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stats-container">
+        <p class="stats">💬 Liczba wiadomości: <span id="totalMessages">Ładowanie...</span></p>
+        <p class="stats">🎰 Widzowie gamblowali <span id="gambleCount">Ładowanie...</span> razy</p>
+    </div>
+
+    <div class="header">
+        <h1>📊 Ranking najczęściej używanych emotek</h1>
+        <div class="select-container">
+            <p>Liczone od: 22.02.2025</p>
+            <label for="timeSelect">Wybierz zakres: </label>
+            <select id="timeSelect" onchange="fetchEmoteRanking()">
+                <option value="1h">Ostatnia godzina</option>
+                <option value="24h" selected>Ostatnie 24h</option>
+                <option value="7d">Ostatnie 7 dni</option>
+                <option value="30d">Ostatnie 30 dni</option>
+            </select>
+        </div>
+    </div>
+    
+
+
+    <div class="container">
+        <ul id="ranking">Ładowanie...</ul>
+    </div>
+
+<script>
+    async function fetchEmoteRanking() {
+        const timeRange = document.getElementById("timeSelect").value;
+        try {
+            const response = await fetch(`http://captures-crest.with.playit.plus:3310/licznik?czas=${timeRange}`);
+            if (!response.ok) throw new Error("Błąd pobierania danych");
+
+            const data = await response.json();
+            document.getElementById("totalMessages").textContent = data.messages_count;
+            document.getElementById("gambleCount").textContent = data.gamble_count;
+
+            const rankingList = document.getElementById("ranking");
+            rankingList.innerHTML = ""; 
+
+            if (data.ranking.length === 0) {
+                rankingList.innerHTML = "<p class='error'>Brak danych do wyświetlenia.</p>";
+                return;
+            }
+
+            data.ranking.forEach((emote, index) => {
+                const listItem = document.createElement("li");
+                let imageUrl = emote.url;
+                
+                // Upewnienie się, że URL jest poprawny
+                if (!imageUrl.startsWith("http")) {
+                    imageUrl = "https://" + imageUrl;
+                }
+
+                // Wybór odpowiedniej odmiany słowa
+                const countText = emote.count === 1 ? "raz" : "razy";
+
+                listItem.innerHTML = `<strong>${index + 1}.</strong> 
+                                      <img src="${imageUrl}" alt="${emote.emote}" title="${emote.emote}"> 
+                                      - ${emote.count} ${countText}`;
+                rankingList.appendChild(listItem);
+            });
+        } catch (error) {
+            console.error("Błąd:", error);
+            document.getElementById("ranking").innerHTML = `<p class="error">❌ Błąd pobierania danych</p>`;
+            document.getElementById("totalMessages").textContent = "❌";
+            document.getElementById("gambleCount").textContent = "❌";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", fetchEmoteRanking);
+</script>
+
+</body>
+</html>
