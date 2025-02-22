@@ -38,15 +38,14 @@
             background-color: #3a3a3e;
         }
         .stats-container {
-			font-size: 24px;
-			padding: 20px;
-			border-radius: 10px;
-			background-color: #1f1f23;
-			display: block; /* lub inline-block, jeśli chcesz */
-			text-align: left;
-			margin: 20px auto; /* Automatyczne marginesy poziome wycentrują element */
-			width: 20%; /* Możesz dostosować szerokość według uznania */
-
+            font-size: 24px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #1f1f23;
+            display: block;
+            text-align: left;
+            margin: 20px auto;
+            width: 20%;
         }
         .stats {
             font-size: 20px;
@@ -84,17 +83,10 @@
     </style>
 </head>
 <body>
-
- 
-
     <div class="header">
-	
         <h1>📊 Ranking czatu</h1>
-
         <div class="select-container">
-		
             <p>Liczone od: 22.02.2025</p>
-			
             <label for="timeSelect">Wybierz zakres: </label>
             <select id="timeSelect" onchange="fetchEmoteRanking()">
                 <option value="1h">Ostatnia godzina</option>
@@ -104,13 +96,13 @@
             </select>
         </div>
     </div>
-	<div class="stats-container">
+    <div class="stats-container">
         <p class="stats">💬 Liczba wiadomości: <span id="totalMessages">Ładowanie...</span></p>
         <p class="stats">🎰 Widzowie gamblowali <span id="gambleCount">Ładowanie...</span> razy</p>
+        <p class="stats">🏆 Łączna liczba wygranych punktów: <span id="winsTotal">Ładowanie...</span></p>
+        <p class="stats">💀 Łączna liczba przegranych punktów: <span id="lossesTotal">Ładowanie...</span></p>
     </div>
     <h2>Ranking emotek</h2>
-
-
     <div class="container">
         <ul id="ranking">Ładowanie...</ul>
     </div>
@@ -124,6 +116,8 @@
             const data = await response.json();
             document.getElementById("totalMessages").textContent = data.messages_count;
             document.getElementById("gambleCount").textContent = data.gamble_count;
+            document.getElementById("winsTotal").textContent = data.wins_total;
+            document.getElementById("lossesTotal").textContent = data.losses_total;
 
             const rankingList = document.getElementById("ranking");
             rankingList.innerHTML = ""; 
@@ -137,12 +131,10 @@
                 const listItem = document.createElement("li");
                 let imageUrl = emote.url;
                 
-                // Upewnienie się, że URL jest poprawny
                 if (!imageUrl.startsWith("http")) {
                     imageUrl = "https://" + imageUrl;
                 }
 
-                // Wybór odpowiedniej odmiany słowa
                 const countText = emote.count === 1 ? "raz" : "razy";
 
                 listItem.innerHTML = `<strong>${index + 1}.</strong> 
@@ -155,11 +147,12 @@
             document.getElementById("ranking").innerHTML = `<p class="error">❌ Błąd pobierania danych</p>`;
             document.getElementById("totalMessages").textContent = "❌";
             document.getElementById("gambleCount").textContent = "❌";
+            document.getElementById("winsTotal").textContent = "❌";
+            document.getElementById("lossesTotal").textContent = "❌";
         }
     }
 
     document.addEventListener("DOMContentLoaded", fetchEmoteRanking);
 </script>
-
 </body>
 </html>
