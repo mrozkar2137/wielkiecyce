@@ -24,7 +24,7 @@
             background: #1f1f23;
             border-radius: 8px;
         }
-        select, input {
+        select, input, button{
             padding: 8px;
             font-size: 16px;
             border-radius: 5px;
@@ -94,7 +94,8 @@
                 <option value="7d">Ostatnie 7 dni</option>
                 <option value="30d">Ostatnie 30 dni</option>
             </select>
-			<input type="text" id="nicknameInput" placeholder="Nick (opcjonalne)" oninput="fetchEmoteRanking()">
+			<input type="text" id="nicknameInput" placeholder="Nick (opcjonalne)">
+			<button id="searchButton">🔍</button>
         </div>
     </div>
     <div class="stats-container">
@@ -162,12 +163,14 @@
 
     document.addEventListener("DOMContentLoaded", fetchEmoteRanking);
 
+    document.getElementById("searchButton").addEventListener("click", fetchEmoteRanking);
     document.getElementById("nicknameInput").addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
             fetchEmoteRanking();
         }
     });
 </script>
+
 
 </body>
 </html>
