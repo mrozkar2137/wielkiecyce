@@ -24,7 +24,7 @@
             background: #1f1f23;
             border-radius: 8px;
         }
-        select, input, button {
+        select, input {
             padding: 8px;
             font-size: 16px;
             border-radius: 5px;
@@ -34,6 +34,9 @@
             outline: none;
             cursor: pointer;
         }
+		button {
+			display:none;
+			}
         select:hover {
             background-color: #3a3a3e;
         }
@@ -106,7 +109,7 @@
                 <option value="30d">Ostatnie 30 dni</option>
             </select>
 			<input type="text" id="nicknameInput" placeholder="Nick (opcjonalne)">
-			
+			<button id="searchButton">🔍</button>
         </div>
     </div>
     <div class="stats-container">
