@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ranking emotek</title>
+    <title>Ranking czatu</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,14 +15,13 @@
         .header {
             margin-bottom: 20px;
         }
-        h1 {
-            margin-bottom: 10px;
-        }
-        .select-container {
-            display: inline-block;
-            padding: 10px;
+        .select-container, .container {
             background: #1f1f23;
+            padding: 10px;
             border-radius: 8px;
+            display: inline-block;
+            text-align: left;
+            margin-top: 20px;
         }
         select, input, button{
             padding: 8px;
@@ -31,34 +30,7 @@
             border: none;
             background-color: #2a2a2e;
             color: white;
-            outline: none;
             cursor: pointer;
-        }
-        select:hover {
-            background-color: #3a3a3e;
-        }
-        .stats-container {
-            font-size: 24px;
-            padding: 20px;
-            border-radius: 10px;
-            background-color: #1f1f23;
-            display: block;
-            text-align: left;
-            margin: 20px auto;
-            width: 30%;
-        }
-        .stats {
-            font-size: 20px;
-            margin: 5px 0;
-        }
-        .container {
-            font-size: 24px;
-            padding: 20px;
-            border-radius: 10px;
-            background-color: #1f1f23;
-            display: inline-block;
-            text-align: left;
-            margin-top: 20px;
         }
         ul {
             list-style: none;
@@ -86,30 +58,27 @@
     <div class="header">
         <h1>📊 Ranking czatu</h1>
         <div class="select-container">
-            <p>Liczone od: 22.02.2025, gamble dla konkretnych nicków liczone od 24.02.2025</p>
             <label for="timeSelect">Wybierz zakres: </label>
-            <select id="timeSelect" onchange="fetchEmoteRanking()">
+            <select id="timeSelect" onchange="fetchRanking()">
                 <option value="1h">Ostatnia godzina</option>
                 <option value="24h" selected>Ostatnie 24h</option>
                 <option value="7d">Ostatnie 7 dni</option>
                 <option value="30d">Ostatnie 30 dni</option>
             </select>
-			<input type="text" id="nicknameInput" placeholder="Nick (opcjonalne)">
-			<button id="searchButton">🔍</button>
+            <input type="text" id="nicknameInput" placeholder="Nick (opcjonalne)">
+            <button id="searchButton">🔍</button>
         </div>
-    </div>
-    <div class="stats-container">
-        <p class="stats">💬 Liczba wiadomości: <span id="totalMessages">Ładowanie...</span></p>
-        <p class="stats">🎰 Liczba gamble: <span id="gambleCount">Ładowanie...</span> razy</p>
-        <p class="stats">🏆 Łączna liczba wygranych punktów: <span id="winsTotal">Ładowanie...</span></p>
-        <p class="stats">💀 Łączna liczba przegranych punktów: <span id="lossesTotal">Ładowanie...</span></p>
     </div>
     <h2>Ranking emotek</h2>
     <div class="container">
         <ul id="ranking">Ładowanie...</ul>
     </div>
+    <h2>Ranking użytkowników</h2>
+    <div class="container">
+        <ul id="userRanking">Ładowanie...</ul>
+    </div>
 <script>
-    async function fetchEmoteRanking() {
+    async function fetchRanking() {
         const timeRange = document.getElementById("timeSelect").value;
         const nickname = document.getElementById("nicknameInput").value.trim();
         
@@ -123,54 +92,44 @@
             if (!response.ok) throw new Error("Błąd pobierania danych");
 
             const data = await response.json();
-            document.getElementById("totalMessages").textContent = data.messages_count;
-            document.getElementById("gambleCount").textContent = data.gamble_count;
-            document.getElementById("winsTotal").textContent = data.wins_total;
-            document.getElementById("lossesTotal").textContent = data.losses_total;
-
-            const rankingList = document.getElementById("ranking");
-            rankingList.innerHTML = ""; 
-
-            if (data.ranking.length === 0) {
-                rankingList.innerHTML = "<p class='error'>Brak danych do wyświetlenia.</p>";
-                return;
-            }
-
-            data.ranking.forEach((emote, index) => {
-                const listItem = document.createElement("li");
-                let imageUrl = emote.url;
-                
-                if (!imageUrl.startsWith("http")) {
-                    imageUrl = "https:" + imageUrl;
-                }
-
-                const countText = emote.count === 1 ? "raz" : "razy";
-
-                listItem.innerHTML = `<strong>${index + 1}.</strong> 
-                                      <img src="${imageUrl}" alt="${emote.emote}" title="${emote.emote}"> 
-                                      - ${emote.count} ${countText}`;
-                rankingList.appendChild(listItem);
-            });
+            updateRanking("ranking", data.ranking, true);
+            updateRanking("userRanking", data.user_ranking, false);
         } catch (error) {
             console.error("Błąd:", error);
             document.getElementById("ranking").innerHTML = `<p class="error">❌ Błąd pobierania danych</p>`;
-            document.getElementById("totalMessages").textContent = "❌";
-            document.getElementById("gambleCount").textContent = "❌";
-            document.getElementById("winsTotal").textContent = "❌";
-            document.getElementById("lossesTotal").textContent = "❌";
+            document.getElementById("userRanking").innerHTML = `<p class="error">❌ Błąd pobierania danych</p>`;
         }
     }
 
-    document.addEventListener("DOMContentLoaded", fetchEmoteRanking);
+    function updateRanking(elementId, rankingData, isEmote) {
+        const rankingList = document.getElementById(elementId);
+        rankingList.innerHTML = "";
 
-    document.getElementById("searchButton").addEventListener("click", fetchEmoteRanking);
+        if (!rankingData || rankingData.length === 0) {
+            rankingList.innerHTML = `<p class='error'>Brak danych do wyświetlenia.</p>`;
+            return;
+        }
+
+        rankingData.forEach((item, index) => {
+            const listItem = document.createElement("li");
+            if (isEmote) {
+                listItem.innerHTML = `<strong>${index + 1}.</strong> 
+                                      <img src="https:${item.url}" alt="${item.emote}" title="${item.emote}"> 
+                                      - ${item.count} razy`;
+            } else {
+                listItem.innerHTML = `<strong>${index + 1}.</strong> ${item.nick} - ${item.count} wiadomości`;
+            }
+            rankingList.appendChild(listItem);
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", fetchRanking);
+    document.getElementById("searchButton").addEventListener("click", fetchRanking);
     document.getElementById("nicknameInput").addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
-            fetchEmoteRanking();
+            fetchRanking();
         }
     });
 </script>
-
-
 </body>
 </html>
