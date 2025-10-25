@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Ukryta Prawda — wyszukiwarka odcinków</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0e0e0d 0%, #1a1a18 100%);
+      color: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      color: #02c6d1;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+
+    input[type="text"] {
+      padding: 10px 15px;
+      width: 260px;
+      border: 2px solid #02c6d1;
+      border-radius: 8px;
+      background: #1c1c1a;
+      color: #f5f5f5;
+      font-size: 15px;
+      outline: none;
+    }
+
+    button {
+      background: #02c6d1;
+      border: none;
+      border-radius: 8px;
+      color: #0e0e0d;
+      font-weight: bold;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background: #03d9e5;
+    }
+
+    .episodes {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .episode-card {
+      background: #1a1a18;
+      border-left: 5px solid #02c6d1;
+      padding: 20px;
+      border-radius: 12px;
+      width: 100%;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      transition: transform 0.2s ease;
+    }
+
+    .episode-card:hover {
+      transform: scale(1.02);
+    }
+
+    .episode-number {
+      color: #02c6d1;
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .episode-desc {
+      color: #ddd;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 600px) {
+      .episode-card {
+        padding: 15px;
+      }
+      input[type="text"] {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Ukryta Prawda — wyszukiwarka odcinków</h1>
+
+  <div class="controls">
+    <input type="text" id="searchInput" placeholder="Wpisz słowa kluczowe...">
+    <button onclick="searchEpisodes()">Szukaj</button>
+    <button onclick="randomEpisodes()">Wylosuj</button>
+  </div>
+
+  <div id="results" class="episodes"></div>
+
+  <script>
+    // Załaduj dane JSON (plik w tym samym katalogu)
+    let episodesData = [];
+
+    fetch("descriptions.json")
+      .then(res => res.json())
+      .then(data => {
+        episodesData = data;
+        displayEpisodes(episodesData.slice(0, 5)); // pokaż kilka na start
+      });
+
+    function displayEpisodes(list) {
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = "";
+
+      if (list.length === 0) {
+        resultsDiv.innerHTML = "<p>Brak wyników.</p>";
+        return;
+      }
+
+      list.forEach(ep => {
+        const div = document.createElement("div");
+        div.className = "episode-card";
+
+        div.innerHTML = `
+          <div class="episode-number">Odcinek ${ep.episode}</div>
+          <div class="episode-desc">${ep.description}</div>
+        `;
+
+        resultsDiv.appendChild(div);
+      });
+    }
+
+    function searchEpisodes() {
+      const query = document.getElementById("searchInput").value.toLowerCase().trim();
+      if (!query) return displayEpisodes([]);
+
+      const filtered = episodesData.filter(ep =>
+        ep.description.toLowerCase().includes(query)
+      );
+      displayEpisodes(filtered);
+    }
+
+    function randomEpisodes() {
+      if (episodesData.length === 0) return;
+      const shuffled = [...episodesData].sort(() => 0.5 - Math.random());
+      const selected = shuffled.slice(0, 3);
+      displayEpisodes(selected);
+    }
+  </script>
+</body>
+</html>
