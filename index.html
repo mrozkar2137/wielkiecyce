@@ -17,31 +17,6 @@
     <meta name="twitter:description" content="NAJWIEKSZE CYCE NA SWIECIE">
     <meta name="twitter:image" content="/images/LOGO.gif">
     <title>WIELKIE CYCE</title>
-	
-	<script>
-	document.addEventListener('DOMContentLoaded', function() {
-		document.getElementById('random-link-button').addEventListener('click', function(event) {
-			event.preventDefault(); // Zapobiega domyślnej akcji (np. przeładowanie strony)
-
-			// Wczytanie pliku uplinks.txt za pomocą fetch API
-			fetch('uplinks.txt')
-				.then(response => response.text())
-				.then(data => {
-					// Split the content into lines
-					const lines = data.split('\n').map(line => line.trim()).filter(line => line !== '');
-					
-					// Losowanie jednej linii
-					const randomLink = lines[Math.floor(Math.random() * lines.length)];
-					
-					// Otwórz losowy link w nowej karcie
-					window.open(randomLink, '_blank');
-				})
-				.catch(error => {
-					console.error('Wystąpił błąd podczas ładowania pliku:', error);
-				});
-		});
-	});
-	</script>
 
 		
 
@@ -198,4 +173,5 @@
 </body>
 
 </html>
+
 
