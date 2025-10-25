@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ukryta Prawda - wyszukiwarka odcinków</title>
   <style>
     body {
@@ -24,9 +25,9 @@
 
     .controls {
       display: flex;
+      flex-direction: column;
+      align-items: center;
       gap: 10px;
-      flex-wrap: wrap;
-      justify-content: center;
       margin-bottom: 30px;
     }
 
@@ -39,6 +40,19 @@
       color: #f5f5f5;
       font-size: 15px;
       outline: none;
+    }
+
+    label {
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
     }
 
     button {
@@ -93,6 +107,18 @@
       line-height: 1.5;
     }
 
+    .episode-link {
+      display: inline-block;
+      margin-top: 10px;
+      color: #02c6d1;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .episode-link:hover {
+      text-decoration: underline;
+    }
+
     @media (max-width: 600px) {
       .episode-card {
         padding: 15px;
@@ -104,66 +130,89 @@
   </style>
 </head>
 <body>
-  <h1>Ukryta Prawda — wyszukiwarka odcinków</h1>
+  <h1>Ukryta Prawda – wyszukiwarka odcinków</h1>
 
   <div class="controls">
-    <input type="text" id="searchInput" placeholder="Wpisz słowa kluczowe...">
-    <button onclick="searchEpisodes()">Szukaj</button>
-    <button onclick="randomEpisodes()">Wylosuj</button>
+    <input type="text" id="search" placeholder="Wpisz słowa kluczowe..." />
+    <label><input type="checkbox" id="exactMatch"> Dokładne dopasowanie</label>
+    <div class="buttons">
+      <button id="searchBtn">Szukaj</button>
+      <button id="randomBtn">Wylosuj</button>
+    </div>
   </div>
 
-  <div id="results" class="episodes"></div>
+  <div class="episodes" id="results"></div>
 
   <script>
-    // Załaduj dane JSON (plik w tym samym katalogu)
-    let episodesData = [];
+    let data = [];
 
-    fetch("descriptions.json")
-      .then(res => res.json())
-      .then(data => {
-        episodesData = data;
-        displayEpisodes(episodesData.slice(0, 5)); // pokaż kilka na start
-      });
+	async function loadData() {
+	  const response = await fetch('descriptions.json');
+	  data = await response.json();
 
-    function displayEpisodes(list) {
-      const resultsDiv = document.getElementById("results");
-      resultsDiv.innerHTML = "";
+	  // Wyświetl wszystkie odcinki od razu
+	  renderResults(data);
+	}
+
+
+    function renderResults(list) {
+      const container = document.getElementById('results');
+      container.innerHTML = '';
 
       if (list.length === 0) {
-        resultsDiv.innerHTML = "<p>Brak wyników.</p>";
+        container.innerHTML = '<p>Brak wyników.</p>';
         return;
       }
 
-      list.forEach(ep => {
-        const div = document.createElement("div");
-        div.className = "episode-card";
-
+      list.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'episode-card';
         div.innerHTML = `
-          <div class="episode-number">Odcinek ${ep.episode}</div>
-          <div class="episode-desc">${ep.description}</div>
+          <div class="episode-number">Odcinek ${item.episode}</div>
+          <div class="episode-desc">${item.description}</div>
+          <a href="${item.url}" target="_blank" class="episode-link">Zobacz na player.pl</a>
         `;
-
-        resultsDiv.appendChild(div);
+        container.appendChild(div);
       });
     }
 
     function searchEpisodes() {
-      const query = document.getElementById("searchInput").value.toLowerCase().trim();
-      if (!query) return displayEpisodes([]);
+      const query = document.getElementById('search').value.trim().toLowerCase();
+      const exact = document.getElementById('exactMatch').checked;
 
-      const filtered = episodesData.filter(ep =>
-        ep.description.toLowerCase().includes(query)
-      );
-      displayEpisodes(filtered);
+      if (!query) {
+        renderResults([]);
+        return;
+      }
+
+      const results = data.filter(item => {
+        const desc = item.description.toLowerCase();
+        if (exact) {
+          return new RegExp(`\\b${query}\\b`, 'i').test(desc);
+        } else {
+          return desc.includes(query);
+        }
+      });
+
+      renderResults(results);
     }
 
     function randomEpisodes() {
-      if (episodesData.length === 0) return;
-      const shuffled = [...episodesData].sort(() => 0.5 - Math.random());
-      const selected = shuffled.slice(0, 3);
-      displayEpisodes(selected);
+      if (data.length === 0) return;
+      const shuffled = [...data].sort(() => 0.5 - Math.random());
+      renderResults(shuffled.slice(0, 3));
     }
+
+    document.getElementById('searchBtn').addEventListener('click', searchEpisodes);
+    document.getElementById('randomBtn').addEventListener('click', randomEpisodes);
+	// Szukanie po wciśnięciu Enter w polu input
+	document.getElementById('search').addEventListener('keydown', function(e) {
+	  if (e.key === 'Enter') {
+		searchEpisodes();
+	  }
+	});
+
+    loadData();
   </script>
 </body>
 </html>
-
