@@ -143,76 +143,87 @@
 
   <div class="episodes" id="results"></div>
 
-  <script>
-    let data = [];
+<script>
+  let data = [];
 
-	async function loadData() {
-	  const response = await fetch('descriptions.json');
-	  data = await response.json();
+  async function loadData() {
+    const response = await fetch('descriptions.json');
+    data = await response.json();
 
-	  // Wyświetl wszystkie odcinki od razu
-	  renderResults(data);
-	}
+    // Wyświetl wszystkie odcinki od razu
+    renderResults(data);
+  }
 
+  function renderResults(list, query = '', exact = false) {
+    const container = document.getElementById('results');
+    container.innerHTML = '';
 
-    function renderResults(list) {
-      const container = document.getElementById('results');
-      container.innerHTML = '';
+    if (list.length === 0) {
+      container.innerHTML = '<p>Brak wyników.</p>';
+      return;
+    }
 
-      if (list.length === 0) {
-        container.innerHTML = '<p>Brak wyników.</p>';
-        return;
+    list.forEach(item => {
+      let desc = item.description;
+
+      if (query) {
+        const pattern = exact
+          ? new RegExp(`\\b(${query})\\b`, 'gi')
+          : new RegExp(`(${query})`, 'gi');
+        desc = desc.replace(pattern, '<mark>$1</mark>');
       }
 
-      list.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'episode-card';
-        div.innerHTML = `
-          <div class="episode-number">Odcinek ${item.episode}</div>
-          <div class="episode-desc">${item.description}</div>
-          <a href="${item.url}" target="_blank" class="episode-link">Zobacz na player.pl</a>
-        `;
-        container.appendChild(div);
-      });
+      const div = document.createElement('div');
+      div.className = 'episode-card';
+      div.innerHTML = `
+        <div class="episode-number">Odcinek ${item.episode}</div>
+        <div class="episode-desc">${desc}</div>
+        <a href="${item.url}" target="_blank" class="episode-link">Zobacz na player.pl</a>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  function searchEpisodes() {
+    const query = document.getElementById('search').value.trim().toLowerCase();
+    const exact = document.getElementById('exactMatch').checked;
+
+    if (!query) {
+      renderResults(data); // pokaz wszystkie jeśli pusty input
+      return;
     }
 
-    function searchEpisodes() {
-      const query = document.getElementById('search').value.trim().toLowerCase();
-      const exact = document.getElementById('exactMatch').checked;
-
-      if (!query) {
-        renderResults([]);
-        return;
+    const filteredResults = data.filter(item => {
+      const desc = item.description.toLowerCase();
+      if (exact) {
+        return new RegExp(`\\b${query}\\b`, 'i').test(desc);
+      } else {
+        return desc.includes(query);
       }
+    });
 
-      const results = data.filter(item => {
-        const desc = item.description.toLowerCase();
-        if (exact) {
-          return new RegExp(`\\b${query}\\b`, 'i').test(desc);
-        } else {
-          return desc.includes(query);
-        }
-      });
+    renderResults(filteredResults, query, exact);
+  }
 
-      renderResults(results);
+  function randomEpisodes() {
+    if (data.length === 0) return;
+    const shuffled = [...data].sort(() => 0.5 - Math.random());
+    renderResults(shuffled.slice(0, 3));
+  }
+
+  document.getElementById('searchBtn').addEventListener('click', searchEpisodes);
+  document.getElementById('randomBtn').addEventListener('click', randomEpisodes);
+
+  // Szukanie po wciśnięciu Enter w polu input
+  document.getElementById('search').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      searchEpisodes();
     }
+  });
 
-    function randomEpisodes() {
-      if (data.length === 0) return;
-      const shuffled = [...data].sort(() => 0.5 - Math.random());
-      renderResults(shuffled.slice(0, 3));
-    }
+  loadData();
+</script>
 
-    document.getElementById('searchBtn').addEventListener('click', searchEpisodes);
-    document.getElementById('randomBtn').addEventListener('click', randomEpisodes);
-	// Szukanie po wciśnięciu Enter w polu input
-	document.getElementById('search').addEventListener('keydown', function(e) {
-	  if (e.key === 'Enter') {
-		searchEpisodes();
-	  }
-	});
 
-    loadData();
-  </script>
 </body>
 </html>
