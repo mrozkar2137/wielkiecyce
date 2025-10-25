@@ -165,11 +165,6 @@ function renderResults(list, query = '', exact = false) {
   // Pokazuje ile wyników
   countEl.textContent = `Znaleziono ${list.length} wyników`;
 
-  if (list.length === 0) {
-    container.innerHTML = '<p>Brak wyników.</p>';
-    return;
-  }
-
   list.forEach(item => {
     let desc = item.description;
 
@@ -235,3 +230,4 @@ function renderResults(list, query = '', exact = false) {
 
 </body>
 </html>
+
