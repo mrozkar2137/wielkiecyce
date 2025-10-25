@@ -140,6 +140,8 @@
       <button id="randomBtn">Wylosuj</button>
     </div>
   </div>
+	<p id="resultCount" style="margin-bottom: 15px; color: #02c6d1; font-weight: bold;"></p>
+	<div class="episodes" id="results"></div>
 
   <div class="episodes" id="results"></div>
 
@@ -154,35 +156,41 @@
     renderResults(data);
   }
 
-  function renderResults(list, query = '', exact = false) {
-    const container = document.getElementById('results');
-    container.innerHTML = '';
+function renderResults(list, query = '', exact = false) {
+  const container = document.getElementById('results');
+  const countEl = document.getElementById('resultCount');
 
-    if (list.length === 0) {
-      container.innerHTML = '<p>Brak wyników.</p>';
-      return;
+  container.innerHTML = '';
+
+  // Pokazuje ile wyników
+  countEl.textContent = `Znaleziono ${list.length} wyników`;
+
+  if (list.length === 0) {
+    container.innerHTML = '<p>Brak wyników.</p>';
+    return;
+  }
+
+  list.forEach(item => {
+    let desc = item.description;
+
+    if (query) {
+      const pattern = exact
+        ? new RegExp(`\\b(${query})\\b`, 'gi')
+        : new RegExp(`(${query})`, 'gi');
+      desc = desc.replace(pattern, '<mark>$1</mark>');
     }
 
-    list.forEach(item => {
-      let desc = item.description;
+    const div = document.createElement('div');
+    div.className = 'episode-card';
+    div.innerHTML = `
+      <div class="episode-number">Odcinek ${item.episode}</div>
+      <div class="episode-desc">${desc}</div>
+      <a href="${item.url}" target="_blank" class="episode-link">Zobacz na player.pl</a>
+    `;
+    container.appendChild(div);
+  });
+}
 
-      if (query) {
-        const pattern = exact
-          ? new RegExp(`\\b(${query})\\b`, 'gi')
-          : new RegExp(`(${query})`, 'gi');
-        desc = desc.replace(pattern, '<mark>$1</mark>');
-      }
-
-      const div = document.createElement('div');
-      div.className = 'episode-card';
-      div.innerHTML = `
-        <div class="episode-number">Odcinek ${item.episode}</div>
-        <div class="episode-desc">${desc}</div>
-        <a href="${item.url}" target="_blank" class="episode-link">Zobacz na player.pl</a>
-      `;
-      container.appendChild(div);
-    });
-  }
 
   function searchEpisodes() {
     const query = document.getElementById('search').value.trim().toLowerCase();
