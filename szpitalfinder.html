@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Szpital - wyszukiwarka odcinków</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0e0e0d 0%, #1a1a18 100%);
+      color: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      color: #02c6d1;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    input[type="text"] {
+      padding: 10px 15px;
+      width: 260px;
+      border: 2px solid #02c6d1;
+      border-radius: 8px;
+      background: #1c1c1a;
+      color: #f5f5f5;
+      font-size: 15px;
+      outline: none;
+    }
+
+    label {
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    button {
+      background: #02c6d1;
+      border: none;
+      border-radius: 8px;
+      color: #0e0e0d;
+      font-weight: bold;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background: #03d9e5;
+    }
+
+    .episodes {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .episode-card {
+      background: #1a1a18;
+      border-left: 5px solid #02c6d1;
+      padding: 20px;
+      border-radius: 12px;
+      width: 100%;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      transition: transform 0.2s ease;
+    }
+
+    .episode-card:hover {
+      transform: scale(1.02);
+    }
+
+    .episode-number {
+      color: #02c6d1;
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .episode-desc {
+      color: #ddd;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .episode-link {
+      display: inline-block;
+      margin-top: 10px;
+      color: #02c6d1;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .episode-link:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      .episode-card {
+        padding: 15px;
+      }
+      input[type="text"] {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div id="cookieConsent" style="position:fixed;top:0;left:0;width:100%;background:#02c6d1;color:#0e0e0d;padding:8px 10px;text-align:center;z-index:1000;font-size:14px;display:flex;justify-content:center;align-items:center;gap:10px;">
+  Ta strona używa plików cookie do przechowywania ulubionych odcinków.
+  <button onclick="acceptCookies()" style="padding:3px 8px;cursor:pointer;border:none;border-radius:5px;">Akceptuję</button>
+  <button onclick="declineCookies()" style="padding:3px 8px;cursor:pointer;border:none;border-radius:5px;">Odrzuć</button>
+</div>
+
+
+  <h1>Szpital – wyszukiwarka odcinków</h1>
+
+  <div class="controls">
+    <input type="text" id="search" placeholder="Wpisz słowa kluczowe..." />
+    <label><input type="checkbox" id="exactMatch"> Dokładne dopasowanie</label>
+    <div class="buttons">
+      <button id="searchBtn">Szukaj</button>
+      <button id="randomBtn">Wylosuj</button>
+	  <button id="showFavBtn">Ulubione</button>
+    </div>
+  </div>
+	<p id="resultCount" style="margin-bottom: 15px; color: #02c6d1; font-weight: bold;"></p>
+	<div class="episodes" id="results"></div>
+
+  <div class="episodes" id="results"></div>
+
+<script>
+  let data = [];
+  let favorites = [];
+
+	function setCookie(name, value, days) {
+	  const consent = localStorage.getItem('cookiesAccepted');
+	  if (consent !== 'true') return; 
+	  const expires = new Date(Date.now() + days*24*60*60*1000).toUTCString();
+	  document.cookie = `${name}=${JSON.stringify(value)}; expires=${expires}; path=/`;
+	}
+
+	function getCookie(name) {
+	  const cookie = document.cookie.split('; ').find(row => row.startsWith(name+'='));
+	  return cookie ? JSON.parse(cookie.split('=')[1]) : [];
+	}
+
+
+	async function loadData() {
+	  const response = await fetch('descriptionsszpital.json');
+	  data = await response.json();
+
+	  const consent = localStorage.getItem('cookiesAccepted');
+	  if (consent === 'true') {
+		favorites = getCookie('favorites_szpital');
+	  } else {
+		favorites = []; 
+	  }
+
+	  renderResults(data);
+	}
+
+  function renderResults(list, query = '', exact = false) {
+    const container = document.getElementById('results');
+    const countEl = document.getElementById('resultCount');
+
+    container.innerHTML = '';
+    countEl.textContent = `Znaleziono ${list.length} wyników`;
+    list.forEach(item => {
+      let desc = item.description;
+
+      if (query) {
+        const pattern = exact
+          ? new RegExp(`\\b(${query})\\b`, 'gi')
+          : new RegExp(`(${query})`, 'gi');
+        desc = desc.replace(pattern, '<mark>$1</mark>');
+      }
+
+      const isFav = favorites.includes(item.episode);
+      const star = isFav ? '★' : '☆';
+
+      const div = document.createElement('div');
+      div.className = 'episode-card';
+      div.innerHTML = `
+        <div class="episode-number">Odcinek ${item.episode} <span class="favorite" style="cursor:pointer; color: #ffd700; font-size: 20px;">${star}</span></div>
+        <div class="episode-desc">${desc}</div>
+        <a href="${item.url}" target="_blank" class="episode-link">Zobacz na player.pl</a>
+      `;
+
+      // Obsługa kliknięcia gwiazdki
+      div.querySelector('.favorite').addEventListener('click', () => {
+        if (favorites.includes(item.episode)) {
+          favorites = favorites.filter(e => e !== item.episode);
+        } else {
+          favorites.push(item.episode);
+        }
+        setCookie('favorites_szpital', favorites, 365);
+        renderResults(list, query, exact); 
+      });
+
+      container.appendChild(div);
+    });
+  }
+
+  function searchEpisodes() {
+    const query = document.getElementById('search').value.trim().toLowerCase();
+    const exact = document.getElementById('exactMatch').checked;
+
+    if (!query) {
+      renderResults(data); 
+      return;
+    }
+
+    const filteredResults = data.filter(item => {
+      const desc = item.description.toLowerCase();
+      if (exact) {
+        return new RegExp(`\\b${query}\\b`, 'i').test(desc);
+      } else {
+        return desc.includes(query);
+      }
+    });
+
+    renderResults(filteredResults, query, exact);
+  }
+
+  function randomEpisodes() {
+    if (data.length === 0) return;
+    const shuffled = [...data].sort(() => 0.5 - Math.random());
+    renderResults(shuffled.slice(0, 3));
+  }
+
+	function acceptCookies() {
+	  localStorage.setItem('cookiesAccepted', 'true');
+	  document.getElementById('cookieConsent').style.display = 'none';
+	}
+
+	function declineCookies() {
+	  localStorage.setItem('cookiesAccepted', 'false');
+	  document.getElementById('cookieConsent').style.display = 'none';
+	}
+
+	// Sprawdzenie przy ładowaniu strony
+	window.addEventListener('load', () => {
+	  const consent = localStorage.getItem('cookiesAccepted');
+	  if(consent === 'true' || consent === 'false') {
+		document.getElementById('cookieConsent').style.display = 'none';
+	  }
+	});
+
+
+  // Pokaż tylko ulubione
+  function showFavorites() {
+    const favEpisodes = data.filter(item => favorites.includes(item.episode));
+    renderResults(favEpisodes);
+  }
+
+  document.getElementById('searchBtn').addEventListener('click', searchEpisodes);
+  document.getElementById('randomBtn').addEventListener('click', randomEpisodes);
+
+  document.getElementById('search').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') searchEpisodes();
+  });
+
+  // Możesz dodać przycisk np. "Pokaż ulubione" w HTML:
+  // <button id="showFavBtn">Ulubione</button>
+  document.getElementById('showFavBtn')?.addEventListener('click', showFavorites);
+
+  loadData();
+</script>
+
+
+
+</body>
+</html>
